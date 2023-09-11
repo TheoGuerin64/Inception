@@ -1,0 +1,49 @@
+version: '3'
+services:
+    nginx:
+        container_name: nginx
+        build: ./images/nginx
+        image: nginx
+        ports:
+         - 443:443
+        volumes:
+         - wordpress:/home/wordpress
+        networks:
+         - internal
+        env_file: ./.env
+        restart: unless-stopped
+    wordpress_php:
+        container_name: wordpress_php
+        build: ./images/wordpress_php
+        image: wordpress_php
+        volumes:
+         - wordpress:/home/wordpress
+        networks:
+         - internal
+        env_file: ./.env
+        restart: unless-stopped
+    mariadb:
+        container_name: mariadb
+        build: ./images/mariadb
+        image: mariadb
+        volumes:
+         - database:/var/lib/mysql
+        networks:
+         - internal
+        env_file: ./.env
+        restart: unless-stopped
+volumes:
+    wordpress:
+        driver: local
+        driver_opts:
+            device: /home/tguerin/data/wordpress/
+            type: none
+            o: bind
+    database:
+        driver: local
+        driver_opts:
+            device: /home/tguerin/data/database/
+            type: none
+            o: bind
+networks:
+    internal:
